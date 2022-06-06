@@ -1,0 +1,24 @@
+---
+- name: Install Debian Packages
+  block:
+  - name: Install Apt Keys
+    apt_key:
+      url: "{{ item }}"
+      state: present
+    loop: "{{ debian.package_keys }}"
+
+  - name: Update apt Cache
+    apt: 
+      update_cache: yes
+      force_apt_get: yes
+
+  - name: Wait for APT Lock
+    shell:  while fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 5; done;
+
+  - name: Install Apt Packages
+    apt:
+      name: "{{ item }}"
+      state: present
+    loop: "{{ debian.packages }}"
+
+  when: ansible_os_family == 'Debian'

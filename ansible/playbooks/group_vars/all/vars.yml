@@ -1,0 +1,5 @@
+ansible_os_family: "Debian"
+
+fabric:
+  version: 2.4.3
+  work_dir: "{{ playbook_dir }}"

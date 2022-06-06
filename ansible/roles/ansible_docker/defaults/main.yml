@@ -1,0 +1,12 @@
+debian:
+  packages:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+    - python3-pip
+    - virtualenv
+    - python3-setuptools
+  
+  package_key: https://download.docker.com/linux/ubuntu/gpg
+  package_repo: deb https://download.docker.com/linux/ubuntu focal stable

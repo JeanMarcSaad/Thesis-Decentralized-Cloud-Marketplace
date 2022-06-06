@@ -1,0 +1,47 @@
+- name: Install Fabric Dependencies
+  hosts: nodes
+  gather_facts: false
+  become: true
+  roles:
+    - {role: roles/fabric_common_packages}
+
+  tasks:
+  - name: Install Fabric Images & Binaries
+    block:
+    - name: Create temporary directory
+      tempfile:
+        state: directory
+        suffix: build
+      register: "fabric_temp_dir_output"
+
+    - debug: var=fabric_temp_dir_output
+
+    - name: Fetch Fabric Installer
+      shell: "curl -sSLO https://raw.githubusercontent.com/hyperledger/fabric/main/scripts/install-fabric.sh && chmod +x install-fabric.sh"
+      args:
+        chdir: "{{ fabric_temp_dir_output.path }}"
+
+    - name: Install Fabric Docker Samples
+      shell: "./install-fabric.sh docker samples"
+      args:
+        chdir: "{{ fabric_temp_dir_output.path }}"
+
+    - name: Install Fabric Binaries
+      shell: "./install-fabric.sh --fabric-version {{ fabric.version }} binary"
+      args:
+        chdir: "{{ fabric_temp_dir_output.path }}"
+
+    - name: Copy Fabric Config & Binary Directories
+      copy:
+        src: "{{ item }}"
+        dest: "{{ playbook_dir }}/../../application"
+        remote_src: yes
+      with_items:
+        - "{{ fabric_temp_dir_output.path }}/bin"
+        - "{{ fabric_temp_dir_output.path }}/config"
+
+    always:
+    - name: Remove temporary directory
+      file:
+        path: "{{ fabric_temp_dir_output.path }}"
+        state: absent

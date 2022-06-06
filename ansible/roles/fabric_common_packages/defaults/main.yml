@@ -1,0 +1,12 @@
+debian:
+  packages:
+    - git
+    - jq
+    - curl
+    - nodejs
+    - npm
+    - golang-go
+    - docker-compose
+
+  package_keys:
+    - https://deb.nodesource.com/gpgkey/nodesource.gpg.key
